@@ -17,7 +17,7 @@ Read the specification: [SPEC.md](SPEC.md)
 | File | Purpose |
 |------|---------|
 | `SPEC.md` | The provenance-locked specification: which gates are fires made mechanical, which are disciplines made mechanical. |
-| `pre-code-gate.sh` | The 21-check gate. Refuses (non-zero exit) rather than advises. |
+| `pre-code-gate.sh` | The 21-check gate. 20 refuse (non-zero exit), 1 advises (pre-completion pipeline). |
 | `model-audit.py` | Daily roster audit against the live OpenRouter directory. |
 | `validate-audit.js` | Zero-dependency production-readiness validator. |
 | `run-pipeline.js` | Zero-dependency pre-completion pipeline runner. |
