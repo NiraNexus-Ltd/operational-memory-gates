@@ -1,0 +1,38 @@
+# Verify — the minimal rail for a published reference artefact. See G-52.
+#
+# WHAT IT DOES: proves the artefact's four executables still PARSE, on every push and every pull request. That is the
+# whole claim a reference implementation makes about itself, and it costs nothing to check.
+#
+# WHAT IT DELIBERATELY DOES NOT DO — named here so a future reader does not add them back thinking they were missed:
+#   * it does NOT execute model-audit.py. That script requires OPENROUTER_API_KEY and calls openrouter.ai live, and a
+#     public artefact must not make a third-party API a hard dependency of its own CI.
+#   * it does NOT run pre-code-gate.sh. That gate writes, and its subject is an estate layout this artefact
+#     deliberately does not carry.
+#   * it creates NO files anywhere: every check below is a parse, so no __pycache__ or build output is left behind.
+#
+# "20 refuse, 1 advises" and the rest of the gate's contract live in the README and SPEC.md, which are prose. This rail
+# does not restate them; it checks the code those documents describe still reads as code.
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+      - name: JavaScript parses (zero-dependency scripts)
+        run: |
+          node --check run-pipeline.js
+          node --check validate-audit.js
+
+      - name: Shell parses (the 21-check gate)
+        run: bash -n pre-code-gate.sh
+
+      - uses: actions/setup-python@v5
+      - name: Python parses (the roster audit)
+        run: python3 -c "import ast; ast.parse(open('model-audit.py').read())"
